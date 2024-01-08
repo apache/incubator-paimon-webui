@@ -18,72 +18,47 @@
 
 package org.apache.paimon.web.server.data.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 /** VO of metadata snapshot. */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SnapshotVO {
-    private final Long snapshotId;
-    private final Long schemaId;
-    private final Long commitIdentifier;
-    private final LocalDateTime commitTime;
 
-    public SnapshotVO(
-            Long snapshotId, Long schemaId, Long commitIdentifier, LocalDateTime commitTime) {
-        this.snapshotId = snapshotId;
-        this.schemaId = schemaId;
-        this.commitIdentifier = commitIdentifier;
-        this.commitTime = commitTime;
-    }
+    private Long snapshotId;
 
-    public Long getSnapshotId() {
-        return snapshotId;
-    }
+    private Long schemaId;
 
-    public Long getSchemaId() {
-        return schemaId;
-    }
+    private String commitUser;
 
-    public Long getCommitIdentifier() {
-        return commitIdentifier;
-    }
+    private Long commitIdentifier;
 
-    public LocalDateTime getCommitTime() {
-        return commitTime;
-    }
+    private String commitKind;
 
-    public static Builder builder() {
-        return new Builder();
-    }
+    private LocalDateTime commitTime;
 
-    /** Builder for SnapshotInfoVo. */
-    public static class Builder {
-        private Long snapshotId;
-        private Long schemaId;
-        private Long commitIdentifier;
-        private LocalDateTime commitTime;
+    private String baseManifestList;
 
-        public Builder setSnapshotId(Long snapshotId) {
-            this.snapshotId = snapshotId;
-            return this;
-        }
+    private String deltaManifestList;
 
-        public Builder setSchemaId(Long schemaId) {
-            this.schemaId = schemaId;
-            return this;
-        }
+    private String changelogManifestList;
 
-        public Builder setCommitIdentifier(Long commitIdentifier) {
-            this.commitIdentifier = commitIdentifier;
-            return this;
-        }
+    private Long totalRecordCount;
 
-        public Builder setCommitTime(LocalDateTime commitTime) {
-            this.commitTime = commitTime;
-            return this;
-        }
+    private Long deltaRecordCount;
 
-        public SnapshotVO build() {
-            return new SnapshotVO(snapshotId, schemaId, commitIdentifier, commitTime);
-        }
-    }
+    private Long changelogRecordCount;
+
+    private Integer addedFileCount;
+
+    private Integer deletedFileCount;
+
+    private Long watermark;
 }

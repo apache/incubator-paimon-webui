@@ -19,20 +19,48 @@
 package org.apache.paimon.web.server.data.vo;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /** VO of metadata data file. */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DataFileVO {
 
     private String partition;
 
-    private long bucket;
+    private Integer bucket;
 
     private String filePath;
 
     private String fileFormat;
+
+    private Long schemaId;
+
+    private Integer level;
+
+    private Long recordCount;
+
+    private Long fileSizeInBytes;
+
+    private String minKey;
+
+    private String maxKey;
+
+    private String nullValueCounts;
+
+    private String minValueStats;
+
+    private String maxValueStats;
+
+    private Long minSequenceNumber;
+
+    private Long maxSequenceNumber;
+
+    private LocalDateTime creationTime;
 }

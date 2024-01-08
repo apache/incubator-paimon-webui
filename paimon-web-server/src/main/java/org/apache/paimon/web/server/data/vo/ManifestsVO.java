@@ -18,57 +18,25 @@
 
 package org.apache.paimon.web.server.data.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /** VO of metadata manifest. */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ManifestsVO {
-    private final String fileName;
-    private final Long fileSize;
-    private final Long numAddedFiles;
 
-    public ManifestsVO(String fileName, Long fileSize, Long numAddedFiles) {
-        this.fileName = fileName;
-        this.fileSize = fileSize;
-        this.numAddedFiles = numAddedFiles;
-    }
+    private String fileName;
 
-    public String getFileName() {
-        return fileName;
-    }
+    private Long fileSize;
 
-    public Long getFileSize() {
-        return fileSize;
-    }
+    private Long numAddedFiles;
 
-    public Long getNumAddedFiles() {
-        return numAddedFiles;
-    }
+    private Long numDeletedFiles;
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    /** ManifestsInfoVo Builder. */
-    public static class Builder {
-        private String fileName;
-        private Long fileSize;
-        private Long numAddedFiles;
-
-        public Builder setFileName(String fileName) {
-            this.fileName = fileName;
-            return this;
-        }
-
-        public Builder setFileSize(Long fileSize) {
-            this.fileSize = fileSize;
-            return this;
-        }
-
-        public Builder setNumAddedFiles(Long numAddedFiles) {
-            this.numAddedFiles = numAddedFiles;
-            return this;
-        }
-
-        public ManifestsVO build() {
-            return new ManifestsVO(fileName, fileSize, numAddedFiles);
-        }
-    }
+    private Long schemaId;
 }
