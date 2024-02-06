@@ -36,7 +36,7 @@ public interface SysRoleService extends IService<SysRole> {
      * @param role query params
      * @return role list
      */
-    List<SysRole> selectRoleList(IPage<SysRole> page, SysRole role);
+    List<SysRole> listRoles(IPage<SysRole> page, SysRole role);
 
     /**
      * Query role list based on user ID.
@@ -68,7 +68,7 @@ public interface SysRoleService extends IService<SysRole> {
      * @param roleId role ID
      * @return role info
      */
-    SysRole selectRoleById(Integer roleId);
+    SysRole getRoleById(Integer roleId);
 
     /**
      * Verify if the role name is unique.

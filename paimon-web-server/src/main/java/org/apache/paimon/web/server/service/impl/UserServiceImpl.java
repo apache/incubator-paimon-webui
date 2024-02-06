@@ -19,6 +19,7 @@
 package org.apache.paimon.web.server.service.impl;
 
 import org.apache.paimon.web.server.data.dto.LoginDTO;
+import org.apache.paimon.web.server.data.dto.RoleWithUserDTO;
 import org.apache.paimon.web.server.data.enums.UserType;
 import org.apache.paimon.web.server.data.model.RoleMenu;
 import org.apache.paimon.web.server.data.model.SysMenu;
@@ -42,6 +43,7 @@ import org.apache.paimon.web.server.service.UserService;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -171,22 +173,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * Query the list of assigned user roles.
      *
-     * @param user query params
+     * @param page the pagination information
+     * @param roleWithUserDTO query params
      * @return user list
      */
     @Override
-    public List<User> selectAllocatedList(User user) {
-        return userMapper.selectAllocatedList(user);
+    public List<User> selectAllocatedList(
+            IPage<RoleWithUserDTO> page, RoleWithUserDTO roleWithUserDTO) {
+        return userMapper.selectAllocatedList(page, roleWithUserDTO);
     }
 
     /**
      * Query the list of unassigned user roles.
      *
-     * @param user query params
+     * @param page the pagination information
+     * @param roleWithUserDTO query params
      * @return user list
      */
     @Override
-    public List<User> selectUnallocatedList(User user) {
-        return userMapper.selectUnallocatedList(user);
+    public List<User> selectUnallocatedList(
+            IPage<RoleWithUserDTO> page, RoleWithUserDTO roleWithUserDTO) {
+        return userMapper.selectUnallocatedList(page, roleWithUserDTO);
     }
 }

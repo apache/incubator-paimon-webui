@@ -18,9 +18,9 @@
 
 package org.apache.paimon.web.server.controller;
 
+import org.apache.paimon.web.server.data.dto.RoleWithUserDTO;
 import org.apache.paimon.web.server.data.model.SysRole;
 import org.apache.paimon.web.server.data.model.User;
-import org.apache.paimon.web.server.data.model.UserRole;
 import org.apache.paimon.web.server.data.result.PageR;
 import org.apache.paimon.web.server.data.result.R;
 import org.apache.paimon.web.server.data.result.enums.Status;
@@ -51,19 +51,20 @@ public class SysRoleController {
 
     @Autowired private UserService userService;
 
+    /** Obtain role views with pagination. */
     @SaCheckPermission("system:role:list")
     @GetMapping("/list")
-    public PageR<SysRole> list(SysRole role) {
+    public PageR<SysRole> listRoles(SysRole role) {
         IPage<SysRole> page = PageSupport.startPage();
-        List<SysRole> list = roleService.selectRoleList(page, role);
+        List<SysRole> list = roleService.listRoles(page, role);
         return PageR.<SysRole>builder().success(true).total(page.getTotal()).data(list).build();
     }
 
     /** Obtain detailed information based on role number. */
     @SaCheckPermission("system:role:query")
     @GetMapping(value = "/{roleId}")
-    public R<SysRole> getInfo(@PathVariable Integer roleId) {
-        return R.succeed(roleService.selectRoleById(roleId));
+    public R<SysRole> getRole(@PathVariable Integer roleId) {
+        return R.succeed(roleService.getRoleById(roleId));
     }
 
     /** Add new role. */
@@ -80,9 +81,9 @@ public class SysRoleController {
     }
 
     /** Update role info. */
-    @SaCheckPermission("system:role:edit")
+    @SaCheckPermission("system:role:update")
     @PutMapping
-    public R<Void> edit(@Validated @RequestBody SysRole role) {
+    public R<Void> update(@Validated @RequestBody SysRole role) {
         roleService.checkRoleAllowed(role);
         if (!roleService.checkRoleNameUnique(role)) {
             return R.failed(Status.ROLE_NAME_IS_EXIST, role.getRoleName());
@@ -98,7 +99,7 @@ public class SysRoleController {
     }
 
     /** Update role status. */
-    @SaCheckPermission("system:role:edit")
+    @SaCheckPermission("system:role:update")
     @PutMapping("/changeStatus")
     public R<Void> changeStatus(@RequestBody SysRole role) {
         roleService.checkRoleAllowed(role);
@@ -106,9 +107,9 @@ public class SysRoleController {
     }
 
     /** Delete role. */
-    @SaCheckPermission("system:role:remove")
+    @SaCheckPermission("system:role:delete")
     @DeleteMapping("/{roleIds}")
-    public R<Void> remove(@PathVariable Integer[] roleIds) {
+    public R<Void> delete(@PathVariable Integer[] roleIds) {
         return roleService.deleteRoleByIds(roleIds) > 0 ? R.succeed() : R.failed();
     }
 
@@ -122,37 +123,30 @@ public class SysRoleController {
     /** Query the list of assigned user roles. */
     @SaCheckPermission("system:role:list")
     @GetMapping("/authUser/allocatedList")
-    public PageR<User> allocatedList(User user) {
-        IPage<SysRole> page = PageSupport.startPage();
-        List<User> list = userService.selectAllocatedList(user);
+    public PageR<User> allocatedList(@RequestBody RoleWithUserDTO roleWithUserDTO) {
+        IPage<RoleWithUserDTO> page = PageSupport.startPage();
+        List<User> list = userService.selectAllocatedList(page, roleWithUserDTO);
         return PageR.<User>builder().success(true).total(page.getTotal()).data(list).build();
     }
 
     /** Query the list of unassigned user roles. */
     @SaCheckPermission("system:role:list")
     @GetMapping("/authUser/unallocatedList")
-    public PageR<User> unallocatedList(User user) {
-        IPage<SysRole> page = PageSupport.startPage();
-        List<User> list = userService.selectUnallocatedList(user);
+    public PageR<User> unallocatedList(@RequestBody RoleWithUserDTO roleWithUserDTO) {
+        IPage<RoleWithUserDTO> page = PageSupport.startPage();
+        List<User> list = userService.selectUnallocatedList(page, roleWithUserDTO);
         return PageR.<User>builder().success(true).total(page.getTotal()).data(list).build();
     }
 
-    /** Unauthorize User. */
-    @SaCheckPermission("system:role:edit")
-    @PutMapping("/authUser/cancel")
-    public R<Void> cancelAuthUser(@RequestBody UserRole userRole) {
-        return roleService.deleteAuthUser(userRole) > 0 ? R.succeed() : R.failed();
-    }
-
     /** Batch Unauthorize User. */
-    @SaCheckPermission("system:role:edit")
+    @SaCheckPermission("system:role:update")
     @PutMapping("/authUser/cancelAll")
     public R<Void> cancelAuthUserAll(Integer roleId, Integer[] userIds) {
         return roleService.deleteAuthUsers(roleId, userIds) > 0 ? R.succeed() : R.failed();
     }
 
     /** Batch Set User Authorization. */
-    @SaCheckPermission("system:role:edit")
+    @SaCheckPermission("system:role:update")
     @PutMapping("/authUser/selectAll")
     public R<Void> selectAuthUserAll(Integer roleId, Integer[] userIds) {
         return roleService.insertAuthUsers(roleId, userIds) > 0 ? R.succeed() : R.failed();

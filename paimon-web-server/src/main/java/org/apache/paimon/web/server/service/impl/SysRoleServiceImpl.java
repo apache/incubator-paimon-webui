@@ -59,7 +59,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
      * @return role list
      */
     @Override
-    public List<SysRole> selectRoleList(IPage<SysRole> page, SysRole role) {
+    public List<SysRole> listRoles(IPage<SysRole> page, SysRole role) {
         return roleMapper.selectRoleList(page, role);
     }
 
@@ -120,7 +120,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
      * @return role info
      */
     @Override
-    public SysRole selectRoleById(Integer roleId) {
+    public SysRole getRoleById(Integer roleId) {
         return this.getById(roleId);
     }
 
@@ -235,7 +235,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
             SysRole sysRole = new SysRole();
             sysRole.setId(roleId);
             checkRoleAllowed(sysRole);
-            SysRole role = selectRoleById(roleId);
+            SysRole role = getRoleById(roleId);
             if (countUserRoleByRoleId(roleId) > 0) {
                 throw new RoleInUsedException(role.getRoleName());
             }

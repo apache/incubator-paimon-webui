@@ -34,7 +34,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="isDelete"       column="is_delete"       />
         <result property="createTime"   column="create_time"  />
         <result property="updateTime"   column="update_time"  />
-        <collection  property="roles"   javaType="java.util.List"           resultMap="RoleResult" />
     </resultMap>
 	
     <resultMap id="RoleResult" type="org.apache.paimon.web.server.data.model.SysRole">
@@ -76,32 +75,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
-	<select id="selectAllocatedList" parameterType="org.apache.paimon.web.server.data.model.User" resultMap="SysUserResult">
+	<select id="selectAllocatedList" parameterType="org.apache.paimon.web.server.data.dto.RoleWithUserDTO" resultMap="SysUserResult">
 	    select distinct u.id, u.username, u.nickname, u.email, u.mobile, u.enabled, u.create_time
 	    from user u
 			 left join user_role urole on u.id = urole.user_id
 			 left join sys_role r on r.id = urole.role_id
-	    where u.is_delete = '0' and r.id = #{roleId}
-	    <if test="username != null and username != ''">
-			AND u.username like concat('%', #{username}, '%')
+	    where u.is_delete = '0' and r.id = #{role.roleId}
+	    <if test="role.username != null and role.username != ''">
+			AND u.username like concat('%', #{role.username}, '%')
 		</if>
-		<if test="mobile != null and mobile != ''">
-			AND u.mobile like concat('%', #{mobile}, '%')
+		<if test="role.mobile != null and role.mobile != ''">
+			AND u.mobile like concat('%', #{role.mobile}, '%')
 		</if>
 	</select>
 	
-	<select id="selectUnallocatedList" parameterType="org.apache.paimon.web.server.data.model.User" resultMap="SysUserResult">
-	    select distinct u.id u.username, u.nickname, u.email, u.mobile, u.enabled, u.create_time
+	<select id="selectUnallocatedList" parameterType="org.apache.paimon.web.server.data.dto.RoleWithUserDTO" resultMap="SysUserResult">
+	    select distinct u.id, u.username, u.nickname, u.email, u.mobile, u.enabled, u.create_time
 	    from user u
 			 left join user_role urole on u.id = urole.user_id
 			 left join sys_role r on r.id = urole.role_id
-	    where u.is_delete = '0' and (r.id != #{roleId} or r.id IS NULL)
-	    and u.id not in (select u.id from user u inner join user_role urole on u.id = urole.user_id and urole.role_id = #{roleId})
-	    <if test="username != null and username != ''">
-			AND u.username like concat('%', #{username}, '%')
+	    where u.is_delete = '0' and (r.id != #{role.roleId} or r.id IS NULL)
+	    and u.id not in (select u.id from user u inner join user_role urole on u.id = urole.user_id and urole.role_id = #{role.roleId})
+	    <if test="role.username != null and role.username != ''">
+			AND u.username like concat('%', #{role.username}, '%')
 		</if>
-		<if test="mobile != null and mobile != ''">
-			AND u.mobile like concat('%', #{mobile}, '%')
+		<if test="role.mobile != null and role.mobile != ''">
+			AND u.mobile like concat('%', #{role.mobile}, '%')
 		</if>
 	</select>
 	
