@@ -20,6 +20,7 @@ package org.apache.paimon.web.server.data.model;
 
 import org.apache.paimon.web.server.constant.Constants;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -57,6 +58,10 @@ public class User extends BaseModel {
 
     /** avatar url. */
     private String url;
+
+    /** role ids. */
+    @TableField(exist = false)
+    private Integer[] roleIds;
 
     public boolean isAdmin() {
         return isAdmin(this.getId());

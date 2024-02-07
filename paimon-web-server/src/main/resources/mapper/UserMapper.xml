@@ -22,10 +22,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.apache.paimon.web.server.mapper.UserMapper">
 
+	<resultMap id="UserWithRolesResult" type="org.apache.paimon.web.server.data.dto.UserWithRolesDTO">
+		<id     property="id"       column="id"      />
+		<result property="username"     column="username"    />
+		<result property="nickname"     column="nickname"    />
+		<result property="userType"     column="user_type"    />
+		<result property="email"        column="email"        />
+		<result property="mobile"  column="mobile"  />
+		<result property="url"          column="url"          />
+		<result property="enabled"     column="enabled"     />
+		<result property="password"     column="password"     />
+		<result property="isDelete"       column="is_delete"       />
+		<result property="createTime"   column="create_time"  />
+		<result property="updateTime"   column="update_time"  />
+		<collection property="roles" resultMap="RoleResult" />
+	</resultMap>
+
     <resultMap type="org.apache.paimon.web.server.data.model.User" id="SysUserResult">
         <id     property="id"       column="id"      />
-        <result property="username"     column="user_name"    />
-        <result property="nickname"     column="nick_name"    />
+        <result property="username"     column="username"    />
+        <result property="nickname"     column="nickname"    />
+        <result property="userType"     column="user_type"    />
         <result property="email"        column="email"        />
         <result property="mobile"  column="mobile"  />
         <result property="url"          column="url"          />
@@ -34,11 +51,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="isDelete"       column="is_delete"       />
         <result property="createTime"   column="create_time"  />
         <result property="updateTime"   column="update_time"  />
-        <collection  property="roles"   javaType="java.util.List"           resultMap="RoleResult" />
     </resultMap>
 	
     <resultMap id="RoleResult" type="org.apache.paimon.web.server.data.model.SysRole">
-        <id     property="id"       column="role_id"        />
+        <id     property="id"       column="id"        />
         <result property="roleName"     column="role_name"      />
         <result property="roleKey"      column="role_key"       />
         <result property="sort"     column="sort"      />
@@ -46,33 +62,33 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectUserVo">
-        select u.id, u.username, u.nickname, u.email, u.url, u.mobile, u.password, u.is_delete, u.enabled, u.create_time,
+        select u.id, u.username, u.nickname, u.user_type, u.email, u.url, u.mobile, u.password, u.is_delete, u.enabled, u.create_time,
         r.id, r.role_name, r.role_key, r.sort, r.enabled as role_status
         from user u
 		    left join user_role urole on u.id = urole.user_id
 		    left join sys_role r on r.id = urole.role_id
     </sql>
     
-    <select id="selectUserList" parameterType="org.apache.paimon.web.server.data.model.User" resultMap="SysUserResult">
-		select u.id, u.nickname, u.username, u.email, u.url, u.mobile, u.enabled, u.is_delete, u.create_time from user u
+    <select id="listUsers" parameterType="org.apache.paimon.web.server.data.model.User" resultMap="UserWithRolesResult">
+		<include refid="selectUserVo"/>
 		where u.is_delete = '0'
-		<if test="id != null and id != 0">
-			AND u.id = #{userId}
+		<if test="user.id != null and user.id != 0">
+			AND u.id = #{user.id}
 		</if>
-		<if test="username != null and username != ''">
-			AND u.username like concat('%', #{userName}, '%')
+		<if test="user.username != null and user.username != ''">
+			AND u.username like concat('%', #{user.username}, '%')
 		</if>
-		<if test="enabled != null and enabled != ''">
-			AND u.enabled = #{enabled}
+		<if test="user.enabled != null and user.enabled != ''">
+			AND u.enabled = #{user.enabled}
 		</if>
-		<if test="mobile != null and mobile != ''">
-			AND u.mobile like concat('%', #{mobile}, '%')
+		<if test="user.mobile != null and user.mobile != ''">
+			AND u.mobile like concat('%', #{user.mobile}, '%')
 		</if>
-		<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
-			AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+		<if test="user.params.beginTime != null and user.params.beginTime != ''"><!-- Start time search -->
+			AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{user.params.beginTime},'%y%m%d')
 		</if>
-		<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
-			AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+		<if test="user.params.endTime != null and user.params.endTime != ''"><!-- End time search -->
+			AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{user.params.endTime},'%y%m%d')
 		</if>
 	</select>
 	
@@ -109,8 +125,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    <include refid="selectUserVo"/>
 		where u.username = #{username} and u.is_delete = '0'
 	</select>
-	
-	<select id="selectUserById" parameterType="Long" resultMap="SysUserResult">
+
+	<select id="selectUserWithRolesById" parameterType="Integer" resultMap="UserWithRolesResult">
 		<include refid="selectUserVo"/>
 		where u.id = #{id}
 	</select>

@@ -18,9 +18,9 @@
 
 package org.apache.paimon.web.server.controller;
 
-import org.apache.paimon.web.server.data.model.User;
 import org.apache.paimon.web.server.data.result.R;
 import org.apache.paimon.web.server.data.result.enums.Status;
+import org.apache.paimon.web.server.data.vo.UserVO;
 import org.apache.paimon.web.server.util.ObjectMapperUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -54,7 +54,7 @@ public class PermissionTest extends ControllerTestBase {
                         .getResponse()
                         .getContentAsString();
 
-        R<User> r = ObjectMapperUtils.fromJSON(responseString, new TypeReference<R<User>>() {});
+        R<UserVO> r = ObjectMapperUtils.fromJSON(responseString, new TypeReference<R<UserVO>>() {});
         assertEquals(Status.SUCCESS.getCode(), r.getCode());
     }
 }
